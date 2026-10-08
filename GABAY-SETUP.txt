@@ -1,0 +1,138 @@
+PC CONCEPT SERVICE APP — GABAY SA PAG-SETUP (LIBRE, WALANG CARD)
+==================================================================
+
+Isang beses mo lang ito gagawin. Gamitin ang computer (Windows o Mac).
+Admin email: gourmiell@gmail.com
+Hindi kailangan ng card. Mananatili sa libreng "Spark plan" ang Firebase.
+
+Tapos na:  [✓] Ginawa ang project na pc-concept-service
+           [✓] Na-on ang Email/Password sa Authentication
+           [✓] Config ng app at notification key (nakalagay na sa app, A at B sa ibaba ay tapos na)
+
+
+BAHAGI 1 — KUNIN ANG 3 BAGAY SA FIREBASE (console.firebase.google.com)
+-----------------------------------------------------------------------
+
+A. CONFIG NG APP
+   Gear icon (⚙) Settings > Project settings > General tab.
+   - Sa "Your apps", pindutin ang icon na </> (Web).
+   - App nickname: PCC Service. HUWAG i-check ang "Firebase Hosting". Pindutin ang Register app.
+   - Lalabas ang code na may  const firebaseConfig = { apiKey: ... };
+     Iwanang bukas ang page. Kokopyahin mo ito mamaya.
+
+B. NOTIFICATION KEY
+   Project settings > Cloud Messaging tab.
+   - Mag-scroll sa "Web configuration" > "Web Push certificates" > Generate key pair.
+   - Lalabas ang mahabang key. Iwanang bukas din.
+
+C. SUSI PARA SA ALARM (service account)
+   Project settings > Service accounts tab > pindutin ang "Generate new private key" > Generate key.
+   - Magda-download ng file na .json. ITAGO ITO at HUWAG ipadala kahit kanino.
+     Ito ang gagamitin ng GitHub para makapagpadala ng alarm.
+
+
+BAHAGI 2 — I-UPLOAD ANG APP (sa computer)
+------------------------------------------
+
+1. I-install ang Node.js (libre): https://nodejs.org > i-download ang "LTS" > install (Next, Next, Finish).
+
+2. I-unzip ang PC-Concept-Service-Firebase.zip, halimbawa sa Desktop.
+
+3. Buksan ang Command Prompt SA LOOB ng folder:
+   - Windows: buksan ang folder, i-click ang address bar sa itaas, i-type  cmd  tapos Enter.
+   - Mac: right-click sa folder > Services > New Terminal at Folder.
+
+4. I-type isa-isa (Enter pagkatapos ng bawat isa):
+
+     npm install -g firebase-tools
+
+     firebase login
+        (magbubukas ang browser: piliin ang gourmiell@gmail.com at Allow)
+
+     firebase firestore:databases:create "(default)" --location=asia-southeast1
+        (ito ang gagawa ng database na nag-error kanina sa website)
+
+     firebase deploy
+
+   Hintayin ang "Deploy complete!". Ang link ng app:  https://pc-concept-service.web.app
+
+
+BAHAGI 3 — I-SETUP ANG LIBRENG ALARM SA GITHUB (walang card)
+-------------------------------------------------------------
+
+1. Gumawa ng libreng account sa https://github.com (Sign up). Pwedeng gamitin ang Gmail mo.
+
+2. Pindutin ang "+" sa itaas-kanan > New repository.
+   - Repository name:  pcc-alarm
+   - Piliin ang PUBLIC (para unlimited at libre ang pagpapatakbo; walang sikretong makikita dito).
+   - I-check ang "Add a README file". Pindutin ang Create repository.
+
+3. I-upload ang laman ng folder na "para-sa-github" (nasa loob ng zip):
+   - Sa repository, pindutin ang "Add file" > "Upload files".
+   - Buksan ang folder na para-sa-github sa computer, piliin LAHAT ng laman
+     (kasama ang folder na ".github"), at i-drag papunta sa GitHub page.
+   - Pindutin ang "Commit changes".
+   - I-check na may lumabas na folder na ".github" sa repository.
+     Kung wala: "Add file" > "Create new file", i-type ang pangalan na
+       .github/workflows/reminders.yml
+     tapos i-paste ang laman ng file na iyon mula sa computer, at Commit changes.
+
+4. Ilagay ang susi mula sa Bahagi 1-C:
+   - Sa repository: Settings > Secrets and variables > Actions > "New repository secret".
+   - Name:   FIREBASE_SERVICE_ACCOUNT
+   - Secret: buksan ang na-download na .json file gamit ang Notepad, Ctrl+A, Ctrl+C, at i-paste dito.
+   - Pindutin ang "Add secret".
+
+5. I-on at subukan:
+   - Pindutin ang tab na "Actions". Kung may button na "I understand my workflows, go ahead and enable them", pindutin.
+   - Piliin ang "PC Concept Service Alarm" > "Run workflow" > Run workflow.
+   - Pagkalipas ng 1 minuto, dapat may berdeng ✓. Kung pula ✗, i-screenshot at ipadala kay Claude.
+   - Mula ngayon, kusa itong tatakbo bawat 5 minuto.
+
+
+BAHAGI 4 — I-INSTALL SA PHONE
+------------------------------
+
+ANDROID (Chrome):
+  1. Buksan ang link sa Chrome.
+  2. ⋮ (itaas-kanan) > "Install app" o "Add to Home screen".
+  3. Buksan ang PCC Service mula sa home screen.
+
+iPHONE (Safari, iOS 16.4 pataas):
+  1. Buksan ang link sa SAFARI (hindi Chrome o Messenger).
+  2. Share (kahon na may arrow pataas) > "Add to Home Screen" > Add.
+  3. Buksan ang app MULA SA HOME SCREEN.
+
+SA UNANG BUKAS:
+  - "Wala pang account? Gumawa" > pangalan, email, password.
+  - Pindutin ang "I-on" sa dilaw na banner > Allow notifications.
+  - Settings (⋮) > "Subukan ang alarm" para makita ang itsura.
+
+
+BAHAGI 5 — IDAGDAG ANG MGA SALES (ikaw lang bilang admin)
+---------------------------------------------------------
+  1. Mag-login gamit ang gourmiell@gmail.com (gumawa ng account sa unang beses).
+  2. Settings (⋮) > "Pamahalaan ang mga user" > ilagay pangalan at email ng sales > Idagdag.
+  3. Ipadala ang link. Gagawa sila ng account gamit ANG PAREHONG EMAIL.
+  4. Lahat ng sales ay pwedeng mag-encode, mag-edit, magtapos at magbura ng client.
+
+
+PAANO GUMAGANA ANG ALARM
+-------------------------
+  - Sa oras ng alarm, may notification sa LAHAT ng phone na naka-ON ang notifications,
+    kahit nakasara ang app. Minsan nahuhuli ito ng ilang minuto (5-15 min) dahil
+    libreng scheduler ng GitHub ang nagpapadala.
+  - Uulit bawat 10/15/30/60 min o 3 oras (depende sa pinili), araw-araw,
+    hanggang may mag-tap ng "Tapos na" o mabura ang client.
+  - Kapag may nagpindot ng "Tapos na", titigil ang alarm sa lahat ng phone.
+  - Kapag bukas ang app, lalabas din ang malaking pop-up na may tunog.
+
+
+KUNG MAY PROBLEMA
+------------------
+  - Walang notification sa Android: Settings ng phone > Apps > PCC Service (o Chrome) >
+    Notifications ON, at Battery > "Unrestricted".
+  - Walang notification sa iPhone: iOS 16.4 pataas, naka-Add to Home Screen,
+    binuksan mula sa home screen, at Settings > Notifications > PCC Service > Allow.
+  - "Hindi ka pa naidagdag": idagdag ng admin ang EXACT na email na ginamit sa account.
+  - Pulang ✗ sa GitHub Actions: i-check na tama ang FIREBASE_SERVICE_ACCOUNT secret.

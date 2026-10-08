@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function myEmail() { return request.auth.token.email.lower(); }
+    function isOwner() { return signedIn() && myEmail() == "gourmiell@gmail.com"; }
+    function isMember() {
+      return signedIn() && (isOwner() || exists(/databases/$(database)/documents/allowed/$(myEmail())));
+    }
+
+    // Mga service ng client: lahat ng user (admin at sales) ay pwedeng magbasa, mag-encode, mag-edit at magbura
+    match /jobs/{jobId} {
+      allow read, write: if isMember();
+    }
+
+    // Listahan ng pinapayagang user: admin lang ang magdadagdag o magtatanggal
+    match /allowed/{email} {
+      allow read: if isOwner() || (signedIn() && myEmail() == email);
+      allow write: if isOwner();
+    }
+
+    // Phone na tatanggap ng notification
+    match /tokens/{token} {
+      allow create, update: if isMember() && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && (resource == null || resource.data.uid == request.auth.uid || isOwner());
+      allow read: if false;
+    }
+  }
+}
