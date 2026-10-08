@@ -1,0 +1,7 @@
+{
+  "name": "pcc-reminder-sender",
+  "private": true,
+  "main": "send-reminders.js",
+  "engines": { "node": ">=20" },
+  "dependencies": { "firebase-admin": "^12.1.0" }
+}
