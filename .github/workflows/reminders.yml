@@ -1,0 +1,37 @@
+name: PC Concept Service Alarm
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reminders
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - name: Ipadala ang mga alarm
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node send-reminders.js
+      - name: Panatilihing aktibo ang schedule
+        run: |
+          last=$(git log -1 --format=%ct); now=$(date +%s)
+          if [ $((now - last)) -gt 3456000 ]; then
+            date -u > .keepalive
+            git config user.name "pcc-alarm-bot"
+            git config user.email "pcc-alarm-bot@users.noreply.github.com"
+            git add .keepalive && git commit -m "Keep alarm schedule active" && git push
+          fi
